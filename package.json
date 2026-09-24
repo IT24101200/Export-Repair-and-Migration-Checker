@@ -1,0 +1,28 @@
+{
+  "name": "export-repair-and-migration-checker",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^26.6.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@zip.js/zip.js": "^2.18.2",
+    "autoprefixer": "^10.6.1",
+    "lucide-react": "^1.48.0",
+    "next": "^16.3.6",
+    "postcss": "^8.5.28",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "zod": "^4.6.5"
+  }
+}
