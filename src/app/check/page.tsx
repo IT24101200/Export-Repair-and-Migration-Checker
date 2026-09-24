@@ -19,6 +19,8 @@ import {
   SAMPLE_COVERAGE,
   SAMPLE_SUMMARY,
 } from "@/lib/fixtures/sampleExport";
+import { scanArchive } from "@/lib/engine/archiveScanner";
+import { buildRepairedArchive } from "@/lib/engine/archiveRepairer";
 import StepIndicator from "@/components/workspace/StepIndicator";
 import FileTree from "@/components/workspace/FileTree";
 import IssueDrawer from "@/components/workspace/IssueDrawer";
@@ -40,7 +42,7 @@ import {
   Check,
   X,
   Search,
-  SlidersHorizontal,
+  AlertCircle,
 } from "lucide-react";
 
 function WorkspaceContent() {
@@ -50,8 +52,10 @@ function WorkspaceContent() {
   const [step, setStep] = useState<WorkspaceStep>("choose");
 
   // File state
-  const [selectedFile, setSelectedFile] = useState<{ name: string; size: number } | null>(null);
+  const [selectedFileMeta, setSelectedFileMeta] = useState<{ name: string; size: number } | null>(null);
+  const [rawFile, setRawFile] = useState<File | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Scanning progress state
   const [scanProgress, setScanProgress] = useState(0);
@@ -61,13 +65,17 @@ function WorkspaceContent() {
   const [buildProgress, setBuildProgress] = useState(0);
   const [buildStageText, setBuildStageText] = useState("");
 
-  // Review & Repair state
+  // Engine review state
   const [activeTab, setActiveTab] = useState<"issues" | "files" | "plan">("issues");
   const [files, setFiles] = useState<ArchiveEntry[]>([]);
   const [issues, setIssues] = useState<IssueItem[]>([]);
   const [coverage, setCoverage] = useState<ScanCoverage | null>(null);
   const [summary, setSummary] = useState<WorkspaceSummary | null>(null);
   const [approvedChanges, setApprovedChanges] = useState<ApprovedChange[]>([]);
+  const [noteContents, setNoteContents] = useState<Map<string, string>>(new Map());
+
+  // Resulting ZIP blob
+  const [outputBlob, setOutputBlob] = useState<Blob | null>(null);
 
   // Selected issue for drawer
   const [drawerIssue, setDrawerIssue] = useState<IssueItem | null>(null);
@@ -90,64 +98,92 @@ function WorkspaceContent() {
 
   // Load demo synthetic dataset
   const loadSampleData = () => {
-    setSelectedFile({
+    setSelectedFileMeta({
       name: SAMPLE_ARCHIVE_NAME,
       size: SAMPLE_ARCHIVE_SIZE,
     });
+    setRawFile(null);
     setIsDemoMode(true);
+    setErrorMessage(null);
   };
 
   // Handle local file selection from input
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setSelectedFile({
+      setRawFile(file);
+      setSelectedFileMeta({
         name: file.name,
         size: file.size,
       });
       setIsDemoMode(false);
+      setErrorMessage(null);
     }
   };
 
   // Remove chosen file
   const handleRemoveFile = () => {
-    setSelectedFile(null);
+    setRawFile(null);
+    setSelectedFileMeta(null);
     setIsDemoMode(false);
+    setErrorMessage(null);
+    setOutputBlob(null);
     setStep("choose");
   };
 
-  // Step 1 -> Step 2: Start scan simulation / execution
-  const handleStartScan = () => {
-    if (!selectedFile) return;
+  // Step 1 -> Step 2: Start scan
+  const handleStartScan = async () => {
+    if (!selectedFileMeta) return;
+    setErrorMessage(null);
     setStep("scanning");
-    setScanProgress(10);
-    setScanStageText("Validating ZIP archive structure and limits...");
 
-    setTimeout(() => {
-      setScanProgress(40);
-      setScanStageText("Reading Markdown notes and extracting references (5 notes)...");
-    }, 600);
-
-    setTimeout(() => {
-      setScanProgress(75);
-      setScanStageText("Checking local paths, image destinations, and casing (14 references)...");
-    }, 1200);
-
-    setTimeout(() => {
-      setScanProgress(100);
-      setScanStageText("Preparing diagnostic report and candidate matches...");
-
-      // Populate review state with sample or parsed data
-      setFiles(SAMPLE_FILES);
-      setIssues(SAMPLE_ISSUES);
-      setCoverage(SAMPLE_COVERAGE);
-      setSummary(SAMPLE_SUMMARY);
-      setApprovedChanges([]);
+    // If using synthetic demo fixture
+    if (isDemoMode || !rawFile) {
+      setScanProgress(10);
+      setScanStageText("Validating ZIP archive structure and limits...");
 
       setTimeout(() => {
+        setScanProgress(45);
+        setScanStageText("Reading Markdown notes and extracting references (5 notes)...");
+      }, 500);
+
+      setTimeout(() => {
+        setScanProgress(80);
+        setScanStageText("Checking local paths, image destinations, and casing (14 references)...");
+      }, 1000);
+
+      setTimeout(() => {
+        setScanProgress(100);
+        setScanStageText("Preparing diagnostic report and candidate matches...");
+
+        setFiles(SAMPLE_FILES);
+        setIssues(SAMPLE_ISSUES);
+        setCoverage(SAMPLE_COVERAGE);
+        setSummary(SAMPLE_SUMMARY);
+        setApprovedChanges([]);
         setStep("review");
-      }, 400);
-    }, 1800);
+      }, 1500);
+      return;
+    }
+
+    // Real archive file processing using @zip.js/zip.js engine
+    try {
+      const result = await scanArchive(rawFile, (percent, msg) => {
+        setScanProgress(percent);
+        setScanStageText(msg);
+      });
+
+      setFiles(result.files);
+      setIssues(result.issues);
+      setCoverage(result.coverage);
+      setSummary(result.summary);
+      setNoteContents(result.noteContents);
+      setApprovedChanges([]);
+      setStep("review");
+    } catch (err: any) {
+      setErrorMessage(err?.message || "Failed to scan archive. Ensure it is a valid Notion ZIP export.");
+      setStep("choose");
+    }
   };
 
   // Cancel in-flight scan
@@ -223,48 +259,90 @@ function WorkspaceContent() {
     setApprovedChanges(newChanges);
   };
 
-  // Step 3 -> Step 4: Build clean copy
-  const handleStartBuild = () => {
+  // Step 3 -> Step 4: Build verified copy
+  const handleStartBuild = async () => {
     setStep("building");
-    setBuildProgress(15);
+    setBuildProgress(10);
+    setBuildStageText("Preparing verified archive build...");
+
+    // Real file repair if rawFile exists
+    if (rawFile && summary) {
+      try {
+        const { blob } = await buildRepairedArchive({
+          originalZipFile: rawFile,
+          files,
+          noteContents,
+          approvedChanges,
+          issues,
+          summary,
+          onProgress: (pct, msg) => {
+            setBuildProgress(pct);
+            setBuildStageText(msg);
+          },
+        });
+
+        setOutputBlob(blob);
+        setSummary({
+          ...summary,
+          resultKind: approvedChanges.length > 0 ? "repaired" : "checked_copy",
+          issueCountAfter: Math.max(0, summary.issueCountBefore - approvedChanges.length),
+          appliedChangeCount: approvedChanges.length,
+        });
+        setStep("download");
+      } catch (err: any) {
+        setErrorMessage("Error building clean archive: " + (err?.message || "unknown error"));
+        setStep("review");
+      }
+      return;
+    }
+
+    // Demo simulation fallback
+    setBuildProgress(25);
     setBuildStageText("Applying approved link destination patches...");
 
     setTimeout(() => {
-      setBuildProgress(50);
+      setBuildProgress(60);
       setBuildStageText("Rechecking modified Markdown documents...");
     }, 600);
 
     setTimeout(() => {
-      setBuildProgress(80);
+      setBuildProgress(85);
       setBuildStageText("Validating checksums on all untouched files...");
-    }, 1200);
+    }, 1100);
 
     setTimeout(() => {
       setBuildProgress(100);
       setBuildStageText("Generating audit reports and packaging new ZIP archive...");
 
-      setTimeout(() => {
-        if (summary) {
-          setSummary({
-            ...summary,
-            resultKind: approvedChanges.length > 0 ? "repaired" : "checked_copy",
-            issueCountAfter: Math.max(0, summary.issueCountBefore - approvedChanges.length),
-            appliedChangeCount: approvedChanges.length,
-          });
-        }
-        setStep("download");
-      }, 500);
-    }, 1800);
+      if (summary) {
+        setSummary({
+          ...summary,
+          resultKind: approvedChanges.length > 0 ? "repaired" : "checked_copy",
+          issueCountAfter: Math.max(0, summary.issueCountBefore - approvedChanges.length),
+          appliedChangeCount: approvedChanges.length,
+        });
+      }
+      setStep("download");
+    }, 1600);
   };
 
   // Download handlers
   const handleDownloadZip = () => {
-    // Generates a mock download for the demo
-    const blob = new Blob(["Simulated Repaired Notion Export ZIP content"], { type: "application/zip" });
-    const url = URL.createObjectURL(blob);
+    const blobToDownload =
+      outputBlob ||
+      new Blob(
+        [
+          "Export Repair and Migration Checker — Simulated Output ZIP\n" +
+            `Archive: ${selectedFileMeta?.name}\n` +
+            `Repaired Links: ${approvedChanges.length}\n`,
+        ],
+        { type: "application/zip" }
+      );
+
+    const url = URL.createObjectURL(blobToDownload);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `repaired_${selectedFile?.name || "export.zip"}`;
+    a.download = `repaired_${selectedFileMeta?.name || "export.zip"}`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -273,11 +351,11 @@ function WorkspaceContent() {
     const reportData = {
       engineVersion: "1.0.0",
       date: new Date().toISOString(),
-      archiveName: selectedFile?.name,
+      archiveName: selectedFileMeta?.name,
       summary,
       coverage,
       approvedChanges,
-      issues,
+      allIssues: issues,
     };
     const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -290,12 +368,12 @@ function WorkspaceContent() {
 
   const handleDownloadReportHtml = () => {
     const html = `<!DOCTYPE html>
-<html>
+<html lang="en">
 <head><meta charset="utf-8"><title>Export Repair Audit Report</title></head>
-<body style="font-family:sans-serif;padding:2rem;">
-<h1>Export Repair Audit Report</h1>
-<p>Archive: ${selectedFile?.name}</p>
-<p>Applied Changes: ${approvedChanges.length}</p>
+<body style="font-family:sans-serif;padding:2rem;max-width:800px;margin:auto;">
+<h1 style="color:#4F46E5;">Export Repair Audit Report</h1>
+<p>Archive: <strong>${selectedFileMeta?.name}</strong></p>
+<p>Applied Changes: <strong>${approvedChanges.length}</strong></p>
 <p>All untouched files verified byte-for-byte.</p>
 </body></html>`;
     const blob = new Blob([html], { type: "text/html" });
@@ -320,6 +398,23 @@ function WorkspaceContent() {
 
   return (
     <div className="container-workspace py-8 space-y-8">
+      {/* Error alert banner if any */}
+      {errorMessage && (
+        <div className="bg-red-50 border border-red-200 text-red-900 p-4 rounded-xl flex items-start justify-between gap-3 text-xs">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+            <span>{errorMessage}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setErrorMessage(null)}
+            className="text-red-700 hover:text-red-900"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* Demo Data Banner if in demo mode */}
       {isDemoMode && (
         <div className="bg-amber-50 border border-amber-200 text-amber-900 px-4 py-2.5 rounded-xl flex items-center justify-between text-xs">
@@ -379,7 +474,7 @@ function WorkspaceContent() {
             </div>
 
             {/* Dropzone area */}
-            {!selectedFile ? (
+            {!selectedFileMeta ? (
               <div className="border-2 border-dashed border-slate-300 hover:border-indigo-400 rounded-xl p-8 sm:p-12 text-center space-y-4 bg-slate-50/50 hover:bg-indigo-50/20 transition-all cursor-pointer relative">
                 <input
                   type="file"
@@ -406,11 +501,11 @@ function WorkspaceContent() {
                     <FileArchive className="w-5 h-5" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-slate-900 truncate" title={selectedFile.name}>
-                      {selectedFile.name}
+                    <p className="text-xs font-bold text-slate-900 truncate" title={selectedFileMeta.name}>
+                      {selectedFileMeta.name}
                     </p>
                     <p className="text-[11px] text-slate-500">
-                      {(selectedFile.size / 1024).toFixed(1)} KB · Stored only in local browser memory
+                      {(selectedFileMeta.size / 1024).toFixed(1)} KB · Stored only in local browser memory
                     </p>
                   </div>
                 </div>
@@ -441,7 +536,7 @@ function WorkspaceContent() {
             <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
               <button
                 type="button"
-                disabled={!selectedFile}
+                disabled={!selectedFileMeta}
                 onClick={handleStartScan}
                 className="w-full sm:flex-1 py-3 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors"
               >
@@ -514,7 +609,7 @@ function WorkspaceContent() {
             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
               <span className="text-[11px] font-semibold text-slate-500 block uppercase">Links Checked</span>
               <span className="text-2xl font-bold text-slate-900 mt-1 block font-mono">
-                {coverage?.checkedReferences || 14}
+                {coverage?.checkedReferences || 0}
               </span>
               <span className="text-[11px] text-slate-400">Markdown targets</span>
             </div>
@@ -558,7 +653,7 @@ function WorkspaceContent() {
               />
             </div>
 
-            {/* Right main panel: Tabs (Issues, Inventory, Repair Plan) */}
+            {/* Right main panel: Tabs (Issues, Repair Plan) */}
             <div className="lg:col-span-8 space-y-4">
               {/* Tab headers */}
               <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-1.5 flex items-center justify-between">
@@ -643,7 +738,7 @@ function WorkspaceContent() {
                     </select>
                   </div>
 
-                  {/* Issues List / Table */}
+                  {/* Issues List */}
                   <div className="divide-y divide-slate-100 max-h-[460px] overflow-y-auto">
                     {filteredIssues.length === 0 ? (
                       <div className="py-12 text-center text-xs text-slate-400">
@@ -890,7 +985,7 @@ function WorkspaceContent() {
                 className="w-full py-3.5 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors"
               >
                 <Download className="w-4 h-4" />
-                <span>Download Repaired ZIP</span>
+                <span>Download Verified Clean ZIP</span>
               </button>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -927,8 +1022,10 @@ function WorkspaceContent() {
                 type="button"
                 onClick={() => {
                   setStep("choose");
-                  setSelectedFile(null);
+                  setSelectedFileMeta(null);
+                  setRawFile(null);
                   setIsDemoMode(false);
+                  setOutputBlob(null);
                 }}
                 className="inline-flex items-center gap-1.5 text-slate-600 hover:text-slate-900 font-medium"
               >
