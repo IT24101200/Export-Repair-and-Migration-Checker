@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   FileText,
@@ -8,8 +8,6 @@ import {
   Trash2,
   ExternalLink,
   ShieldAlert,
-  Calendar,
-  Layers,
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
@@ -26,35 +24,45 @@ interface SavedSummaryItem {
 }
 
 export default function DashboardPage() {
-  // Sample initial records for the user's dashboard demonstration
-  const [reports, setReports] = useState<SavedSummaryItem[]>([
-    {
-      id: "rep-001",
-      title: "Report — 24 September 2026",
-      date: "2026-09-24 18:30",
-      resultKind: "repaired",
-      fileCount: 42,
-      issueCountBefore: 7,
-      appliedChangeCount: 5,
-      uncheckedFileCount: 2,
-    },
-    {
-      id: "rep-002",
-      title: "Report — 23 September 2026",
-      date: "2026-09-23 11:15",
-      resultKind: "scan_only",
-      fileCount: 18,
-      issueCountBefore: 3,
-      appliedChangeCount: 0,
-      uncheckedFileCount: 0,
-    },
-  ]);
-
+  const [reports, setReports] = useState<SavedSummaryItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this saved summary record?")) {
-      setReports(reports.filter((r) => r.id !== id));
+  // Fetch reports from API on load
+  const fetchReports = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/reports?limit=50");
+      if (res.ok) {
+        const data = await res.json();
+        setReports(data.reports || []);
+      }
+    } catch (err) {
+      console.error("Failed to load reports", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this saved summary record?")) return;
+
+    try {
+      const res = await fetch(`/api/reports/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setReports((prev) => prev.filter((r) => r.id !== id));
+        setStatusMessage("Summary record deleted.");
+        setTimeout(() => setStatusMessage(null), 2500);
+      } else {
+        alert("Could not delete report.");
+      }
+    } catch {
+      alert("Error contacting server.");
     }
   };
 
@@ -82,6 +90,12 @@ export default function DashboardPage() {
         </Link>
       </div>
 
+      {statusMessage && (
+        <div className="p-3 bg-teal-50 border border-teal-200 text-teal-800 rounded-lg text-xs font-medium">
+          {statusMessage}
+        </div>
+      )}
+
       {/* Filter and stats row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2">
@@ -105,7 +119,11 @@ export default function DashboardPage() {
       </div>
 
       {/* Reports Table / List */}
-      {filteredReports.length === 0 ? (
+      {loading ? (
+        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center text-xs text-slate-400">
+          Loading saved summaries...
+        </div>
+      ) : filteredReports.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center space-y-3">
           <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center">
             <FileText className="w-6 h-6" />
@@ -160,6 +178,11 @@ export default function DashboardPage() {
                       {report.resultKind === "scan_only" && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
                           Scan Only
+                        </span>
+                      )}
+                      {report.resultKind === "checked_copy" && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">
+                          Checked
                         </span>
                       )}
                     </td>

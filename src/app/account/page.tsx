@@ -1,21 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, Mail, ShieldAlert, LogOut, Trash2, Check, ArrowLeft } from "lucide-react";
+import { User, Mail, ShieldAlert, LogOut, Trash2, Check, ArrowLeft, AlertCircle } from "lucide-react";
 
 export default function AccountPage() {
   const router = useRouter();
-  const [displayName, setDisplayName] = useState("Alex Developer");
+  const [email, setEmail] = useState("student.developer@example.com");
+  const [displayName, setDisplayName] = useState("Student Developer");
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [confirmText, setConfirmText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  // Load profile from API on mount
+  useEffect(() => {
+    async function loadSession() {
+      try {
+        const res = await fetch("/api/session");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.user) {
+            setEmail(data.user.email);
+            setDisplayName(data.user.displayName);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load session", err);
+      }
+    }
+    loadSession();
+  }, []);
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 2500);
+    setLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ displayName }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data?.error?.message || "Failed to update profile.");
+      }
+
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 2500);
+    } catch (err: any) {
+      setErrorMessage(err?.message || "Error saving profile.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSignOut = () => {
@@ -23,13 +65,23 @@ export default function AccountPage() {
     router.push("/login");
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     if (confirmText !== "DELETE") {
       alert("Please type DELETE to confirm account deletion.");
       return;
     }
-    alert("Account and all saved summary records have been deleted.");
-    router.push("/");
+
+    try {
+      const res = await fetch("/api/me", { method: "DELETE" });
+      if (res.ok) {
+        alert("Account and all saved summary records have been deleted.");
+        router.push("/");
+      } else {
+        alert("Failed to delete account.");
+      }
+    } catch {
+      alert("Error contacting server.");
+    }
   };
 
   return (
@@ -49,6 +101,13 @@ export default function AccountPage() {
         </p>
       </div>
 
+      {errorMessage && (
+        <div className="p-3 bg-red-50 border border-red-200 text-red-800 rounded-lg text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
       {/* Account Details Card */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
         <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
@@ -65,7 +124,7 @@ export default function AccountPage() {
             <input
               type="email"
               disabled
-              value="alex.developer@example.com"
+              value={email}
               className="w-full pl-9 pr-3 py-2 text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 rounded-lg cursor-not-allowed"
             />
           </div>
@@ -100,9 +159,10 @@ export default function AccountPage() {
           <div className="flex items-center gap-3">
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs transition-colors"
+              disabled={loading}
+              className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-medium text-xs transition-colors"
             >
-              Save Profile
+              {loading ? "Saving..." : "Save Profile"}
             </button>
             {savedSuccess && (
               <span className="inline-flex items-center gap-1 text-xs text-teal-700 font-medium">

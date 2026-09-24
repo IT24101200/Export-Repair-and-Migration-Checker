@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { WorkspaceSummary } from "@/lib/types/workspace";
-import { X, ShieldCheck, Check, Database } from "lucide-react";
+import { X, ShieldCheck, Check, Database, AlertCircle } from "lucide-react";
 
 interface SaveSummaryModalProps {
   summary: WorkspaceSummary;
@@ -19,20 +19,53 @@ export default function SaveSummaryModal({
 }: SaveSummaryModalProps) {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
+    setErrorMessage(null);
+
+    try {
+      const payload = {
+        clientResultId: summary.clientResultId || `res-${Date.now()}`,
+        engineVersion: summary.engineVersion || "1.0.0",
+        sourceFormat: summary.sourceFormat || "notion_markdown_csv",
+        resultKind: summary.resultKind || "scan_only",
+        fileCount: summary.fileCount,
+        markdownCount: summary.markdownCount,
+        checkedReferenceCount: summary.checkedReferenceCount,
+        issueCountBefore: summary.issueCountBefore,
+        issueCountAfter: summary.issueCountAfter,
+        appliedChangeCount: summary.appliedChangeCount,
+        uncheckedFileCount: summary.uncheckedFileCount,
+        archiveName: summary.archiveName,
+      };
+
+      const res = await fetch("/api/reports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error?.message || "Failed to save summary.");
+      }
+
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
         onConfirmSave();
         onClose();
-      }, 1200);
-    }, 800);
+      }, 1000);
+    } catch (err: any) {
+      setErrorMessage(err?.message || "Could not save summary to account.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -52,8 +85,15 @@ export default function SaveSummaryModal({
           </button>
         </div>
 
+        {errorMessage && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
         <p className="text-xs text-slate-600 leading-relaxed">
-          Here is the exact data that will be stored in your account history. Notice that private note text, file names, and image contents are <strong className="text-slate-900">never transmitted</strong>.
+          Here is the exact data that will be stored in your account history. Private note text, file names, and image contents are <strong className="text-slate-900">never transmitted</strong>.
         </p>
 
         {/* Exact JSON-like summary preview */}
