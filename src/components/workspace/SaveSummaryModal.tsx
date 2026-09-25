@@ -70,34 +70,34 @@ export default function SaveSummaryModal({
 
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-slate-200">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
-            <Database className="w-4 h-4 text-indigo-600" />
+      <div className="bg-white dark:bg-slate-900 rounded-xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-slate-200 dark:border-slate-800 transition-colors">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-slate-100 text-sm">
+            <Database className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
             <span>Save Scan Summary to Account</span>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-md text-slate-400 hover:text-slate-600"
+            className="p-1 rounded-md text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {errorMessage && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-xs flex items-center gap-2">
+          <div className="p-3 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 rounded-lg text-red-800 dark:text-red-300 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
-        <p className="text-xs text-slate-600 leading-relaxed">
-          Here is the exact data that will be stored in your account history. Private note text, file names, and image contents are <strong className="text-slate-900">never transmitted</strong>.
+        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+          Here is the exact data that will be stored in your account history. Private note text, file names, and image contents are <strong className="text-slate-900 dark:text-slate-100">never transmitted</strong>.
         </p>
 
         {/* Exact JSON-like summary preview */}
-        <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-200 font-mono text-[11px] space-y-1 text-slate-700">
+        <div className="bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-lg border border-slate-200 dark:border-slate-700 font-mono text-[11px] space-y-1 text-slate-700 dark:text-slate-300">
           <div>engineVersion: &quot;{summary.engineVersion}&quot;</div>
           <div>resultKind: &quot;{summary.resultKind}&quot;</div>
           <div>fileCount: {summary.fileCount}</div>
@@ -108,8 +108,8 @@ export default function SaveSummaryModal({
           <div>uncheckedFileCount: {summary.uncheckedFileCount}</div>
         </div>
 
-        <div className="flex items-center gap-2 text-[11px] text-teal-800 bg-teal-50 p-2.5 rounded-lg border border-teal-200">
-          <ShieldCheck className="w-4 h-4 text-teal-600 shrink-0" />
+        <div className="flex items-center gap-2 text-[11px] text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/50 p-2.5 rounded-lg border border-teal-200 dark:border-teal-900">
+          <ShieldCheck className="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" />
           <span>Zero note files or archive contents leave your browser.</span>
         </div>
 
@@ -118,7 +118,7 @@ export default function SaveSummaryModal({
             type="button"
             disabled={saving}
             onClick={onClose}
-            className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800"
+            className="px-3.5 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
           >
             Cancel
           </button>
@@ -126,7 +126,7 @@ export default function SaveSummaryModal({
             type="button"
             disabled={saving || success}
             onClick={handleSave}
-            className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-medium text-xs flex items-center gap-1.5 transition-colors"
+            className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-medium text-xs flex items-center gap-1.5 transition-colors shadow-sm"
           >
             {success ? (
               <>

@@ -16,11 +16,34 @@ export default function StepIndicator({ currentStep, onStepClick }: StepIndicato
   ];
 
   const getStepIndex = (step: WorkspaceStep) => steps.findIndex((s) => s.id === step);
-  const currentIndex = getStepIndex(currentStep);
+  const currentIndex = Math.max(0, getStepIndex(currentStep));
+  const activeStep = steps[currentIndex] || steps[0];
 
   return (
-    <nav aria-label="Progress" className="w-full">
-      <ol className="flex items-center justify-between gap-2 max-w-3xl mx-auto">
+    <nav aria-label="Workflow progress" className="w-full">
+      {/* Mobile-only compact progress header (UI-04) */}
+      <div className="sm:hidden flex items-center justify-between pb-3 mb-2 border-b border-slate-100 dark:border-slate-800">
+        <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+          Step {activeStep.number} of 5 — <span className="text-indigo-600 dark:text-indigo-400">{activeStep.label}</span>
+        </span>
+        <div className="flex items-center gap-1.5">
+          {steps.map((s, idx) => (
+            <div
+              key={s.id}
+              className={`h-1.5 rounded-full transition-all ${
+                idx === currentIndex
+                  ? "w-5 bg-indigo-600 dark:bg-indigo-400"
+                  : idx < currentIndex
+                  ? "w-2 bg-teal-500 dark:bg-teal-400"
+                  : "w-2 bg-slate-200 dark:bg-slate-700"
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Stepper bar (Full on tablets & desktop, compact points on mobile) */}
+      <ol className="flex items-center justify-between gap-1.5 sm:gap-2 max-w-3xl mx-auto">
         {steps.map((step, idx) => {
           const isCompleted = idx < currentIndex;
           const isCurrent = idx === currentIndex;
@@ -32,28 +55,28 @@ export default function StepIndicator({ currentStep, onStepClick }: StepIndicato
                 type="button"
                 disabled={!isClickable}
                 onClick={() => isClickable && onStepClick(step.id)}
-                className={`flex items-center gap-2 group w-full text-left focus:outline-none ${
+                className={`flex items-center gap-2 group w-full text-left focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:rounded-lg ${
                   isClickable ? "cursor-pointer" : "cursor-default"
                 }`}
               >
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${
                     isCompleted
                       ? "bg-teal-600 text-white"
                       : isCurrent
-                      ? "bg-indigo-600 text-white ring-4 ring-indigo-100"
-                      : "bg-slate-200 text-slate-500"
+                      ? "bg-indigo-600 text-white ring-4 ring-indigo-100 dark:ring-indigo-900/60"
+                      : "bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                   }`}
                 >
-                  {isCompleted ? <Check className="w-4 h-4 stroke-[3]" /> : step.number}
+                  {isCompleted ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3]" /> : step.number}
                 </div>
                 <span
                   className={`hidden sm:inline text-xs font-semibold whitespace-nowrap transition-colors ${
                     isCurrent
-                      ? "text-indigo-600"
+                      ? "text-indigo-600 dark:text-indigo-400"
                       : isCompleted
-                      ? "text-slate-800"
-                      : "text-slate-400"
+                      ? "text-slate-800 dark:text-slate-200"
+                      : "text-slate-400 dark:text-slate-500"
                   }`}
                 >
                   {step.label}
@@ -61,8 +84,8 @@ export default function StepIndicator({ currentStep, onStepClick }: StepIndicato
               </button>
               {idx < steps.length - 1 && (
                 <div
-                  className={`hidden sm:block h-0.5 flex-1 mx-2 ${
-                    idx < currentIndex ? "bg-teal-500" : "bg-slate-200"
+                  className={`h-0.5 flex-1 mx-1 sm:mx-2 ${
+                    idx < currentIndex ? "bg-teal-500 dark:bg-teal-400" : "bg-slate-200 dark:bg-slate-700"
                   }`}
                 />
               )}
