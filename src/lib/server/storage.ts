@@ -22,6 +22,18 @@ export interface StoredSummaryRecord {
   uncheckedFileCount: number;
 }
 
+export interface StoredFeedbackRecord {
+  id: string;
+  userId: string;
+  clientFeedbackId: string;
+  schemaVersion: number;
+  engineVersion: string;
+  sourceFormat: "notion_markdown_csv";
+  outcome: "helped" | "partly_helped" | "not_helped" | "not_sure";
+  reasonCode: string;
+  createdAt: string;
+}
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -34,6 +46,7 @@ declare global {
   var __appStorage: {
     user: UserProfile;
     reports: StoredSummaryRecord[];
+    feedback: StoredFeedbackRecord[];
   } | undefined;
 }
 
@@ -83,6 +96,7 @@ if (!globalThis.__appStorage) {
         uncheckedFileCount: 0,
       },
     ],
+    feedback: [],
   };
 }
 
@@ -169,13 +183,61 @@ export function deleteReportRecord(id: string): boolean {
   return storage.reports.length < initialLength;
 }
 
-// Delete user account and all saved summaries
+// Delete user account and all saved summaries and feedback
 export function deleteUserAccount(): void {
   storage.reports = [];
+  storage.feedback = [];
   storage.user = {
     id: "usr-guest",
     email: "guest@example.com",
     displayName: "Guest",
     createdAt: new Date().toISOString(),
   };
+}
+
+// List user feedback records (newest first)
+export function listUserFeedback(): StoredFeedbackRecord[] {
+  if (!storage.feedback) storage.feedback = [];
+  return [...storage.feedback].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+}
+
+// Save a new feedback record with idempotency check
+export function createFeedbackRecord(input: import("@/lib/validation/feedback").CreateFeedbackInput): {
+  record: StoredFeedbackRecord;
+  status: "created" | "existing" | "conflict";
+} {
+  if (!storage.feedback) storage.feedback = [];
+
+  const existing = storage.feedback.find((f) => f.clientFeedbackId === input.clientFeedbackId);
+  if (existing) {
+    if (existing.outcome === input.outcome && existing.reasonCode === input.reasonCode) {
+      return { record: existing, status: "existing" };
+    }
+    return { record: existing, status: "conflict" };
+  }
+
+  const newRecord: StoredFeedbackRecord = {
+    id: `fb-${Date.now().toString().slice(-6)}`,
+    userId: storage.user.id,
+    clientFeedbackId: input.clientFeedbackId,
+    schemaVersion: input.schemaVersion,
+    engineVersion: input.engineVersion,
+    sourceFormat: input.sourceFormat,
+    outcome: input.outcome,
+    reasonCode: input.reasonCode,
+    createdAt: new Date().toISOString(),
+  };
+
+  storage.feedback.unshift(newRecord);
+  return { record: newRecord, status: "created" };
+}
+
+// Delete single feedback record by ID
+export function deleteFeedbackRecord(id: string): boolean {
+  if (!storage.feedback) storage.feedback = [];
+  const initialLength = storage.feedback.length;
+  storage.feedback = storage.feedback.filter((f) => f.id !== id);
+  return storage.feedback.length < initialLength;
 }

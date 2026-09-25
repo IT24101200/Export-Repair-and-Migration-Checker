@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { UpdateProfileSchema } from "@/lib/validation/reports";
-import { updateUserProfile } from "@/lib/server/storage";
+import { getUserProfile, updateUserProfile } from "@/lib/server/storage";
+
+// GET /api/profile — Fetch current user profile
+export async function GET() {
+  const user = getUserProfile();
+  return NextResponse.json({
+    user: {
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+    },
+  });
+}
 
 // PATCH /api/profile — Update user's display name
 export async function PATCH(request: NextRequest) {

@@ -101,18 +101,18 @@ export default function ReportDetailPage({ params }: { params: Promise<{ id: str
       </div>
 
       {/* Main card */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 sm:p-8 space-y-6">
         <div>
-          <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600">
+          <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
             Saved Audit Record
           </span>
-          <h1 className="text-2xl font-bold text-slate-900 mt-1">{report.title}</h1>
-          <p className="text-xs text-slate-500 mt-1">Saved on {report.date} · Engine v{report.engineVersion}</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-1">{report.title}</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Saved on {report.date} · Engine v{report.engineVersion}</p>
         </div>
 
         {/* Mandatory Specification Disclaimer */}
-        <div className="p-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 flex items-start gap-3 text-xs leading-relaxed">
-          <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-300 flex items-start gap-3 text-xs leading-relaxed">
+          <AlertTriangle className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
           <div>
             <strong className="block font-semibold">Metadata Summary Only</strong>
             <span>
@@ -123,32 +123,32 @@ export default function ReportDetailPage({ params }: { params: Promise<{ id: str
 
         {/* Detailed Metrics Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
-          <div className="p-4 rounded-lg bg-slate-50 border border-slate-100">
-            <span className="text-[11px] font-semibold text-slate-500 block uppercase">Total Files</span>
-            <span className="text-2xl font-bold text-slate-900 mt-1 block font-mono">{report.fileCount}</span>
+          <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block uppercase">Total Files</span>
+            <span className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-1 block font-mono">{report.fileCount}</span>
             <span className="text-[11px] text-slate-400">{report.markdownCount} Markdown notes</span>
           </div>
-          <div className="p-4 rounded-lg bg-slate-50 border border-slate-100">
-            <span className="text-[11px] font-semibold text-slate-500 block uppercase">Links Checked</span>
-            <span className="text-2xl font-bold text-slate-900 mt-1 block font-mono">{report.checkedReferenceCount}</span>
+          <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block uppercase">Links Checked</span>
+            <span className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-1 block font-mono">{report.checkedReferenceCount}</span>
             <span className="text-[11px] text-slate-400">Internal targets</span>
           </div>
-          <div className="p-4 rounded-lg bg-teal-50 border border-teal-100">
-            <span className="text-[11px] font-semibold text-teal-700 block uppercase">Changes Applied</span>
-            <span className="text-2xl font-bold text-teal-800 mt-1 block font-mono">{report.appliedChangeCount}</span>
-            <span className="text-[11px] text-teal-600">Approved repairs</span>
+          <div className="p-4 rounded-lg bg-teal-50 dark:bg-teal-950/40 border border-teal-100 dark:border-teal-900/40">
+            <span className="text-[11px] font-semibold text-teal-700 dark:text-teal-400 block uppercase">Changes Applied</span>
+            <span className="text-2xl font-bold text-teal-800 dark:text-teal-300 mt-1 block font-mono">{report.appliedChangeCount}</span>
+            <span className="text-[11px] text-teal-600 dark:text-teal-400">Approved repairs</span>
           </div>
-          <div className="p-4 rounded-lg bg-slate-50 border border-slate-100">
-            <span className="text-[11px] font-semibold text-slate-500 block uppercase">Unchecked Files</span>
-            <span className="text-2xl font-bold text-slate-700 mt-1 block font-mono">{report.uncheckedFileCount}</span>
+          <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block uppercase">Unchecked Files</span>
+            <span className="text-2xl font-bold text-slate-700 dark:text-slate-200 mt-1 block font-mono">{report.uncheckedFileCount}</span>
             <span className="text-[11px] text-slate-400">CSV/HTML preserved</span>
           </div>
         </div>
 
         {/* Result status summary */}
-        <div className="border-t border-slate-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-xs text-slate-600">
-            <CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0" />
+        <div className="border-t border-slate-100 dark:border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+            <CheckCircle2 className="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" />
             <span>Format: {report.sourceFormat}</span>
           </div>
           <Link

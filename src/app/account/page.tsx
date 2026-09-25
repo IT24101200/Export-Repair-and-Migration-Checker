@@ -15,9 +15,11 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Load profile from API on mount
+  const [feedbackList, setFeedbackList] = useState<any[]>([]);
+
+  // Load profile and feedback from API on mount
   useEffect(() => {
-    async function loadSession() {
+    async function loadData() {
       try {
         const res = await fetch("/api/session");
         if (res.ok) {
@@ -30,9 +32,32 @@ export default function AccountPage() {
       } catch (err) {
         console.error("Failed to load session", err);
       }
+
+      try {
+        const resFb = await fetch("/api/feedback");
+        if (resFb.ok) {
+          const fbData = await resFb.json();
+          setFeedbackList(fbData.feedback || []);
+        }
+      } catch (err) {
+        console.error("Failed to load feedback", err);
+      }
     }
-    loadSession();
+    loadData();
   }, []);
+
+  const handleDeleteFeedback = async (id: string) => {
+    try {
+      const res = await fetch(`/api/feedback/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setFeedbackList((prev) => prev.filter((item) => item.id !== id));
+      } else {
+        alert("Failed to delete feedback entry.");
+      }
+    } catch {
+      alert("Error contacting server.");
+    }
+  };
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,28 +120,28 @@ export default function AccountPage() {
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Account Settings</h1>
-        <p className="text-xs text-slate-500 mt-1">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Account Settings</h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
           Manage your account profile and authentication preferences.
         </p>
       </div>
 
       {errorMessage && (
-        <div className="p-3 bg-red-50 border border-red-200 text-red-800 rounded-lg text-xs flex items-center gap-2">
+        <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 rounded-lg text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
 
       {/* Account Details Card */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
-        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 sm:p-8 space-y-6">
+        <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
           Profile Details
         </h2>
 
         {/* Email read-only */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">
+          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
             Email Address
           </label>
           <div className="relative">
@@ -125,7 +150,7 @@ export default function AccountPage() {
               type="email"
               disabled
               value={email}
-              className="w-full pl-9 pr-3 py-2 text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 rounded-lg cursor-not-allowed"
+              className="w-full pl-9 pr-3 py-2 text-xs font-medium bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-lg cursor-not-allowed"
             />
           </div>
           <p className="text-[11px] text-slate-400 mt-1">
@@ -136,7 +161,7 @@ export default function AccountPage() {
         {/* Display name form */}
         <form onSubmit={handleSaveProfile} className="space-y-4">
           <div>
-            <label htmlFor="displayName" className="block text-xs font-semibold text-slate-700 mb-1">
+            <label htmlFor="displayName" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Display Name (Optional)
             </label>
             <div className="relative">
@@ -148,7 +173,7 @@ export default function AccountPage() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Your name"
-                className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
             <p className="text-[11px] text-slate-400 mt-1">
@@ -160,12 +185,12 @@ export default function AccountPage() {
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-medium text-xs transition-colors"
+              className="min-h-[44px] px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-semibold text-xs transition-colors"
             >
               {loading ? "Saving..." : "Save Profile"}
             </button>
             {savedSuccess && (
-              <span className="inline-flex items-center gap-1 text-xs text-teal-700 font-medium">
+              <span className="inline-flex items-center gap-1 text-xs text-teal-700 dark:text-teal-400 font-medium">
                 <Check className="w-3.5 h-3.5" />
                 Profile updated!
               </span>
@@ -174,8 +199,8 @@ export default function AccountPage() {
         </form>
 
         {/* Stored data explanation */}
-        <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-1 text-xs text-slate-600">
-          <strong className="text-slate-800 font-semibold block">What we store for your account:</strong>
+        <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 space-y-1 text-xs text-slate-600 dark:text-slate-400">
+          <strong className="text-slate-800 dark:text-slate-200 font-semibold block">What we store for your account:</strong>
           <ul className="list-disc pl-4 space-y-0.5 text-[11px]">
             <li>Your authenticated email and optional display name.</li>
             <li>High-level summary counts from scans you explicitly choose to save.</li>
@@ -184,12 +209,12 @@ export default function AccountPage() {
         </div>
 
         {/* Sign out */}
-        <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-          <span className="text-xs text-slate-600">Finished your session?</span>
+        <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <span className="text-xs text-slate-600 dark:text-slate-400">Finished your session?</span>
           <button
             type="button"
             onClick={handleSignOut}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors"
+            className="min-h-[44px] inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign Out</span>
@@ -197,13 +222,56 @@ export default function AccountPage() {
         </div>
       </div>
 
+      {/* Submitted Feedback History */}
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 sm:p-8 space-y-4">
+        <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
+          Your Submitted Feedback
+        </h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Voluntary structured product feedback you have submitted. You can delete individual responses at any time.
+        </p>
+
+        {feedbackList.length === 0 ? (
+          <p className="text-xs text-slate-400 italic py-2">
+            No feedback submitted yet. You can submit feedback after inspecting an export.
+          </p>
+        ) : (
+          <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            {feedbackList.map((item) => (
+              <div key={item.id} className="py-3 flex items-center justify-between gap-3 text-xs">
+                <div>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 capitalize">
+                    {item.outcome.replace(/_/g, " ")}
+                  </span>
+                  <span className="text-slate-400 ml-2">
+                    Difficulty: <span className="capitalize">{item.reasonCode.replace(/_/g, " ")}</span>
+                  </span>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    {new Date(item.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteFeedback(item.id)}
+                  className="w-10 h-10 flex items-center justify-center rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                  title="Delete feedback"
+                  aria-label="Delete feedback"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Danger Zone: Delete Account */}
-      <div className="bg-white rounded-xl border border-red-200 shadow-sm p-6 sm:p-8 space-y-4">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-red-200 dark:border-red-900/60 shadow-sm p-6 sm:p-8 space-y-4">
         <div className="flex items-start gap-3">
-          <ShieldAlert className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+          <ShieldAlert className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <h2 className="text-sm font-bold text-red-900">Delete Account &amp; Stored Summaries</h2>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <h2 className="text-sm font-bold text-red-900 dark:text-red-300">Delete Account &amp; Stored Summaries</h2>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
               Permanently delete your profile and all associated saved scan summary records from our database. This action cannot be undone.
             </p>
           </div>
@@ -213,7 +281,7 @@ export default function AccountPage() {
           <button
             type="button"
             onClick={() => setShowDeleteModal(true)}
-            className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium text-xs transition-colors"
+            className="min-h-[44px] px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold text-xs transition-colors"
           >
             Delete Account
           </button>
@@ -222,15 +290,15 @@ export default function AccountPage() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6 space-y-4 shadow-xl border border-slate-200">
-            <div className="flex items-center gap-2 text-red-600 font-bold text-base">
+        <div className="fixed inset-0 bg-slate-900/40 dark:bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-xl max-w-md w-full p-6 space-y-4 shadow-xl border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center gap-2 text-red-600 dark:text-red-400 font-bold text-base">
               <Trash2 className="w-5 h-5" />
               <h3>Confirm Account Deletion</h3>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
-              This will permanently delete your account and all saved audit summaries. Type <strong className="text-slate-900 font-mono">DELETE</strong> below to confirm:
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              This will permanently delete your account and all saved audit summaries. Type <strong className="text-slate-900 dark:text-slate-100 font-mono">DELETE</strong> below to confirm:
             </p>
 
             <input
@@ -238,7 +306,7 @@ export default function AccountPage() {
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
               placeholder="Type DELETE"
-              className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 font-mono"
+              className="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 font-mono"
             />
 
             <div className="flex items-center justify-end gap-3 pt-2">
@@ -248,7 +316,7 @@ export default function AccountPage() {
                   setShowDeleteModal(false);
                   setConfirmText("");
                 }}
-                className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900"
+                className="px-3.5 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
               >
                 Cancel
               </button>
@@ -256,7 +324,7 @@ export default function AccountPage() {
                 type="button"
                 disabled={confirmText !== "DELETE"}
                 onClick={handleDeleteAccount}
-                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 disabled:bg-slate-300 text-white text-xs font-semibold transition-colors"
+                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white text-xs font-semibold transition-colors"
               >
                 Permanently Delete
               </button>
