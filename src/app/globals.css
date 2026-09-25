@@ -1,12 +1,22 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --background: #F8FAFC;
+    --foreground: hsl(0, 0%, 0%);
+    --skeleton: hsl(0, 0%, 90%);
+    --btn-border: hsl(214deg, 31.8%, 91.4%);
+    --input: hsl(220, 20%, 90%);
+    --radius: 0.5rem;
+
     --card: #FFFFFF;
+    --card-muted: #F8FAFC;
     --text-main: #0F172A;
     --text-muted: #475569;
-    --border: #CBD5E1;
+    --border: #E2E8F0;
+    --border-strong: #CBD5E1;
     --primary: #4F46E5;
     --primary-hover: #4338CA;
     --success-text: #0F766E;
@@ -18,33 +28,229 @@
     --error-text: #B91C1C;
     --error-bg: #FEF2F2;
     --error-border: #FEE2E2;
+
+    /* Motion & easing tokens */
+    --er-motion-fast: 140ms;
+    --er-motion-panel: 220ms;
+    --er-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .dark {
+    --background: #0B0F19;
+    --foreground: hsl(0, 0%, 100%);
+    --skeleton: hsl(218, 36%, 16%);
+    --btn-border: hsl(217deg, 32.6%, 17.5%);
+    --input: hsl(219, 63%, 16%);
+
+    --card: #111827;
+    --card-muted: #1F2937;
+    --text-main: #F9FAFB;
+    --text-muted: #9CA3AF;
+    --border: #1F2937;
+    --border-strong: #374151;
+    --primary: #6366F1;
+    --primary-hover: #4F46E5;
+    --success-text: #2DD4BF;
+    --success-bg: #042F2E;
+    --success-border: #115E59;
+    --warning-text: #FCD34D;
+    --warning-bg: #451A03;
+    --warning-border: #78350F;
+    --error-text: #F87171;
+    --error-bg: #450A0A;
+    --error-border: #7F1D1D;
   }
 
   body {
     background-color: var(--background);
     color: var(--text-main);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--font-sans), "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Accessible focus indicator */
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
   }
 }
 
-/* Custom utility styles matching the specification */
-.container-public {
-  max-width: 1120px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+@layer components {
+  .g-button {
+    border-radius: var(--radius);
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--btn-border);
+  }
 }
 
-.container-workspace {
-  max-width: 1440px;
+/* Animations for modern animated sign in */
+@keyframes ripple {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+}
+
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateY(calc(var(--radius) * 1px)) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateY(calc(var(--radius) * 1px)) rotate(-360deg);
+  }
+}
+
+.animate-ripple {
+  animation: ripple 2s ease calc(var(--i, 0) * 0.2s) infinite;
+}
+
+.animate-orbit {
+  animation: orbit calc(var(--duration) * 1s) linear infinite;
+}
+
+/* Continuous smooth tickers across entire hero page (both directions, slow speed) */
+@keyframes hero-marquee-left {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes hero-marquee-right {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-marquee-left-slow {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: hero-marquee-left 95s linear infinite;
+}
+
+.animate-marquee-right-slow {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: hero-marquee-right 95s linear infinite;
+}
+
+/* Glass Pill and Magnetic Button Styles for entire web page */
+.footer-glass-pill {
+  background: linear-gradient(145deg, color-mix(in oklch, var(--foreground) 4%, transparent) 0%, color-mix(in oklch, var(--foreground) 1%, transparent) 100%);
+  box-shadow: 
+      0 8px 24px -8px color-mix(in oklch, var(--background) 50%, transparent), 
+      inset 0 1px 1px color-mix(in oklch, var(--foreground) 10%, transparent), 
+      inset 0 -1px 2px color-mix(in oklch, var(--background) 80%, transparent);
+  border: 1px solid color-mix(in oklch, var(--foreground) 10%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footer-glass-pill:hover {
+  background: linear-gradient(145deg, color-mix(in oklch, var(--foreground) 8%, transparent) 0%, color-mix(in oklch, var(--foreground) 2%, transparent) 100%);
+  border-color: color-mix(in oklch, var(--foreground) 22%, transparent);
+  box-shadow: 
+      0 16px 32px -8px color-mix(in oklch, var(--background) 70%, transparent), 
+      inset 0 1px 1px color-mix(in oklch, var(--foreground) 20%, transparent);
+}
+
+
+/* Wide, fluid container for public pages (removes empty gutters on widescreen) */
+.container-public {
+  width: 100%;
+  max-width: 96rem; /* 1536px */
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: clamp(1rem, 3.5vw, 3.5rem);
+  padding-right: clamp(1rem, 3.5vw, 3.5rem);
+}
+
+/* Extra-wide workspace container for inspection & repair workflow */
+.container-workspace {
+  width: 100%;
+  max-width: 105rem; /* 1680px */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1rem, 3vw, 2.5rem);
+  padding-right: clamp(1rem, 3vw, 2.5rem);
+}
+
+/* Full bleed container */
+.container-fluid {
+  width: 100%;
+  padding-left: clamp(1rem, 3.5vw, 3rem);
+  padding-right: clamp(1rem, 3.5vw, 3rem);
+}
+
+/* Safe path wrapping */
+.er-long-text {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Touch target sizing for mobile usability */
+.er-touch-control {
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+}
+
+/* UI Transitions */
+.er-ui-transition {
+  transition-property: color, background-color, border-color, opacity, transform;
+  transition-duration: var(--er-motion-fast);
+  transition-timing-function: var(--er-ease);
+}
+
+/* Subtle step enter animation */
+.er-step-enter {
+  animation: er-step-in 180ms var(--er-ease);
+}
+
+@keyframes er-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Button micro-lift on fine pointers */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .er-button-lift:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* Respect OS reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .er-step-enter {
+    animation: none !important;
+  }
+  .er-ui-transition {
+    transition-duration: 0ms !important;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 code, pre {
