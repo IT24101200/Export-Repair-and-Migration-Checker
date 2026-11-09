@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import {
   ShieldCheck,
   FileCheck2,
@@ -16,6 +17,12 @@ import {
 
 import { Cta69 } from "@/components/ui/cta69";
 import { MagneticButton } from "@/components/ui/motion-footer";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export default function HomePage() {
   return (
