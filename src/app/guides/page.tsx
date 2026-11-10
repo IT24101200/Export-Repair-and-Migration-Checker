@@ -2,8 +2,9 @@ import Link from "next/link";
 import { BookOpen, FileText, ArrowRight, ShieldCheck, CheckCircle2, Link2, Image as ImageIcon, FolderTree, CheckSquare } from "lucide-react";
 
 export const metadata = {
-  title: "Export & Migration Guides — Export Repair Checker",
-  description: "Comprehensive guides on Notion exports, fixing broken links, missing images, path limits, and migration checklists.",
+  title: "Notion Export and Migration Guides | Export Repair",
+  description: "Read practical guides for exporting Notion workspaces, fixing broken Markdown links, diagnosing missing images, and preparing files for migration.",
+  alternates: { canonical: "/guides" },
 };
 
 export default function GuidesPage() {

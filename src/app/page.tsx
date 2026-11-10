@@ -19,6 +19,9 @@ import { Cta69 } from "@/components/ui/cta69";
 import { MagneticButton } from "@/components/ui/motion-footer";
 
 export const metadata: Metadata = {
+  title: "Export Repair & Migration Checker | Online Tool",
+  description:
+    "Check a Notion Markdown and CSV export for broken links, missing image references, and path issues. Review repairs and download a cleaner ZIP in your browser.",
   alternates: {
     canonical: "/",
   },
@@ -196,7 +199,7 @@ export default function HomePage() {
       <section className="container-public">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 transition-colors">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">What it checks</h3>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">What it checks</h2>
             <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
               <li className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-teal-600 dark:text-teal-400 mt-0.5 shrink-0" />
@@ -218,7 +221,7 @@ export default function HomePage() {
           </div>
 
           <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 transition-colors">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">What results mean</h3>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">What results mean</h2>
             <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
               <li className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-teal-600 dark:text-teal-400 mt-0.5 shrink-0" />
@@ -245,30 +248,30 @@ export default function HomePage() {
 
         <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 divide-y divide-slate-200 dark:divide-slate-800 transition-colors">
           <div className="p-6">
-            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-sm flex items-center gap-2">
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-sm flex items-center gap-2">
               <HelpCircle className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
               Does my export file get uploaded to your servers?
-            </h4>
+            </h3>
             <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
               No. Processing happens 100% inside your browser using Web Workers and JavaScript. Your notes, images, and file paths never leave your device.
             </p>
           </div>
 
           <div className="p-6">
-            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-sm flex items-center gap-2">
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-sm flex items-center gap-2">
               <HelpCircle className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
               Does this tool change my original ZIP archive?
-            </h4>
+            </h3>
             <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
               Never. Your input file is read-only. We generate a brand new, verified clean ZIP containing only the approved changes, alongside a full audit report.
             </p>
           </div>
 
           <div className="p-6">
-            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-sm flex items-center gap-2">
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-sm flex items-center gap-2">
               <HelpCircle className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
               Can this tool recover missing files that were not in my Notion export?
-            </h4>
+            </h3>
             <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
               No. We can only repair references to files that actually exist inside your exported archive. If a subpage was excluded during export, we flag it as an unresolved reference.
             </p>

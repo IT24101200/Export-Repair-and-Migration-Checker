@@ -2,8 +2,9 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, Image as ImageIcon, AlertCircle, CheckCircle2, ShieldCheck } from "lucide-react";
 
 export const metadata = {
-  title: "Notion Missing Images Guide — Export Repair Checker",
-  description: "Diagnose why images are missing or broken after exporting Notion workspaces to Markdown.",
+  title: "Missing Images in Notion Exports | Guide",
+  description: "Diagnose broken image references in Notion Markdown exports and learn the difference between an incorrect path and a file missing from the ZIP.",
+  alternates: { canonical: "/guides/notion-export-missing-images" },
 };
 
 export default function NotionExportMissingImagesGuide() {

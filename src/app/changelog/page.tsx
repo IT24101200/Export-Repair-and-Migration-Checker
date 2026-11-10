@@ -2,8 +2,9 @@ import Link from "next/link";
 import { History, Tag, ArrowRight, ShieldCheck, CheckCircle2, AlertTriangle, Bug } from "lucide-react";
 
 export const metadata = {
-  title: "Changelog & Releases — Export Repair and Migration Checker",
-  description: "Dated release history, supported changes, bug fixes, and current engine capabilities.",
+  title: "Product Changelog | Export Repair Checker",
+  description: "Review release notes, feature additions, bug fixes, supported checks, and known limitations for the Export Repair and Migration Checker.",
+  alternates: { canonical: "/changelog" },
 };
 
 export default function ChangelogPage() {

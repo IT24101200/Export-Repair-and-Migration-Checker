@@ -2,8 +2,9 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, Link2, AlertCircle, CheckCircle2, ShieldCheck } from "lucide-react";
 
 export const metadata = {
-  title: "Notion Export Broken Links Guide — Export Repair Checker",
-  description: "Learn why Notion exports break relative Markdown links and how to repair them safely.",
+  title: "Fix Broken Links in Notion Exports | Guide",
+  description: "Learn why relative Markdown links break in Notion exports, how export IDs and encoded paths affect links, and how to review safe repair suggestions.",
+  alternates: { canonical: "/guides/notion-export-broken-links" },
 };
 
 export default function NotionExportBrokenLinksGuide() {

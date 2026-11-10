@@ -1,5 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle, Info } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Understanding Export Scan Results | Guide",
+  description:
+    "Understand Notion export scan findings, repair candidates, unresolved references, unchecked content, and what to verify before downloading a repaired ZIP.",
+  alternates: { canonical: "/guides/understanding-results" },
+};
 
 export default function UnderstandingResultsGuidePage() {
   return (

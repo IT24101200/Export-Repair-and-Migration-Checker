@@ -2,8 +2,9 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, FolderTree, AlertTriangle, ShieldCheck } from "lucide-react";
 
 export const metadata = {
-  title: "Notion Export Long Paths Guide — Export Repair Checker",
-  description: "Understand path length warnings in Notion exports and how to prevent extraction errors on Windows.",
+  title: "Notion Export Long Path Warnings | Guide",
+  description: "Understand long file path warnings in Notion exports and learn practical ways to reduce extraction and migration problems on Windows.",
+  alternates: { canonical: "/guides/notion-export-long-paths" },
 };
 
 export default function NotionExportLongPathsGuide() {

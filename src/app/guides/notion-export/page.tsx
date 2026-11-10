@@ -1,5 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ArrowLeft, Check, AlertCircle } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "How to Export Notion for Migration | Guide",
+  description:
+    "Learn how to export a Notion workspace as Markdown and CSV with subpages and attachments included, then prepare the ZIP for migration checks.",
+  alternates: { canonical: "/guides/notion-export" },
+};
 
 export default function NotionExportGuidePage() {
   return (

@@ -1,5 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { FileText, AlertTriangle } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Terms of Service | Export Repair Checker",
+  description:
+    "Read the terms, user responsibilities, service limitations, and independent tool notice for the Export Repair and Migration Checker.",
+  alternates: { canonical: "/terms" },
+};
 
 export default function TermsPage() {
   return (

@@ -1,5 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { HelpCircle, ChevronRight, ShieldCheck, Mail } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Help and Troubleshooting | Export Repair Checker",
+  description:
+    "Find answers about supported Notion ZIP exports, browser-based processing, scan limitations, common errors, repaired downloads, and account requirements.",
+  alternates: { canonical: "/help" },
+};
 
 export default function HelpPage() {
   const faqs = [

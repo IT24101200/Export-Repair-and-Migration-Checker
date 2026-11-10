@@ -1,5 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Lock, ShieldCheck, Database, HardDrive } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | Export Repair Checker",
+  description:
+    "Learn how Export Repair Checker processes Notion ZIP archives locally in your browser and what limited summary data optional accounts can store.",
+  alternates: { canonical: "/privacy" },
+};
 
 export default function PrivacyPage() {
   return (

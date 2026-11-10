@@ -2,8 +2,9 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, CheckSquare, ShieldCheck, CheckCircle2, FileCheck } from "lucide-react";
 
 export const metadata = {
-  title: "Pre-Migration Checklist: Check Your Notion Export — Export Repair Checker",
-  description: "A 5-step verification checklist before moving Notion export files to Obsidian or other Markdown tools.",
+  title: "Notion Export Pre-Migration Checklist | Export Repair",
+  description: "Follow a five-step checklist to verify your Notion Markdown and CSV export before moving it to Obsidian or another Markdown-based tool.",
+  alternates: { canonical: "/guides/check-notion-export-before-moving" },
 };
 
 export default function CheckNotionExportBeforeMovingGuide() {
