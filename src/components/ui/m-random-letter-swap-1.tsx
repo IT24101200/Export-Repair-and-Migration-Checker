@@ -1,7 +1,4 @@
-"use client";
-
 import Link from "next/link";
-import { RandomLetterSwap } from "@/components/ui/random-letter-swap";
 import { cn } from "@/lib/utils";
 
 export interface NavItem {
@@ -46,28 +43,20 @@ export default function RandomLetterSwapNav({
             (activePath === href ||
               (href !== "/" && activePath?.startsWith(href)));
 
-          const swapEl = (
-            <RandomLetterSwap
-              className={cn(
-                "cursor-pointer font-medium text-sm transition-colors",
-                isActive
-                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-              label={label}
-              staggerDuration={0.025}
-              transition={{ duration: 0.6, type: "spring" }}
-            />
-          );
-
           if (href) {
             return (
               <Link
                 key={label}
                 href={href}
-                className="py-1 relative inline-flex items-center focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
+                aria-current={isActive ? "page" : undefined}
+                className={cn(
+                  "py-1 relative inline-flex items-center rounded text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500",
+                  isActive
+                    ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
               >
-                {swapEl}
+                {label}
                 {isActive && (
                   <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 dark:bg-indigo-400 rounded-full" />
                 )}
@@ -75,7 +64,7 @@ export default function RandomLetterSwapNav({
             );
           }
 
-          return <span key={label}>{swapEl}</span>;
+          return <span key={label}>{label}</span>;
         })}
       </nav>
     </div>

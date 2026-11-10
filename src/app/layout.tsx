@@ -40,8 +40,14 @@ export default function RootLayout({
         />
       </head>
       <body className={`${plusJakarta.className} min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased`} suppressHydrationWarning>
+        <a
+          href="#main-content"
+          className="fixed left-4 top-4 z-[100] -translate-y-24 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-transform focus:translate-y-0"
+        >
+          Skip to main content
+        </a>
         <PublicHeader />
-        <main className="flex-1 flex flex-col">{children}</main>
+        <main id="main-content" className="flex-1 flex flex-col" tabIndex={-1}>{children}</main>
         <Footer />
       </body>
     </html>

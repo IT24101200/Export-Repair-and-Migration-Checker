@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ShieldCheck, Menu, X, ArrowRight } from "lucide-react";
 import ThemeToggle from "@/components/layout/ThemeToggle";
-import { MagneticButton } from "@/components/ui/motion-footer";
+import { MagneticButton } from "@/components/ui/magnetic-button";
 import RandomLetterSwapNav from "@/components/ui/m-random-letter-swap-1";
 
 // Header component with responsive navigation, theme toggle, and mobile drawer
@@ -53,7 +53,7 @@ export default function PublicHeader() {
           className="flex items-center gap-2 font-bold text-slate-900 dark:text-slate-100 text-lg hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:rounded"
         >
           <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/50 shadow-xs">
-            <ShieldCheck className="w-5 h-5" />
+            <ShieldCheck className="w-5 h-5" aria-hidden="true" />
           </div>
           <span className="tracking-tight font-bold">Export Repair</span>
         </Link>
@@ -74,7 +74,7 @@ export default function PublicHeader() {
             className="footer-glass-pill inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-foreground hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold text-xs transition-colors shadow-sm"
           >
             <span>Start Check</span>
-            <ArrowRight className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+            <ArrowRight className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" aria-hidden="true" />
           </MagneticButton>
         </div>
 
@@ -88,7 +88,7 @@ export default function PublicHeader() {
             aria-expanded={mobileMenuOpen}
             aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" aria-hidden="true" /> : <Menu className="w-5 h-5" aria-hidden="true" />}
           </button>
         </div>
       </div>
@@ -96,13 +96,14 @@ export default function PublicHeader() {
       {/* Mobile navigation sheet & backdrop */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 top-16 z-50 md:hidden flex flex-col bg-slate-900/40 backdrop-blur-xs">
-          <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-5 space-y-2 shadow-xl animate-in slide-in-from-top-2 duration-150">
+          <nav aria-label="Mobile navigation" className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-5 space-y-2 shadow-xl animate-in slide-in-from-top-2 duration-150">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
               return (
                 <Link
                   key={link.href}
                   href={link.href}
+                  aria-current={isActive ? "page" : undefined}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center min-h-[44px] px-3 rounded-lg text-sm font-semibold transition-colors ${
                     isActive
@@ -122,12 +123,17 @@ export default function PublicHeader() {
                 className="flex items-center justify-center min-h-[44px] w-full rounded-lg bg-indigo-600 text-white font-semibold text-sm shadow-sm hover:bg-indigo-700 transition-colors"
               >
                 <span>Start Export Check</span>
-                <ArrowRight className="w-4 h-4 ml-1.5" />
+                <ArrowRight className="w-4 h-4 ml-1.5" aria-hidden="true" />
               </Link>
             </div>
-          </div>
+          </nav>
           {/* Overlay click to dismiss */}
-          <div className="flex-1" onClick={() => setMobileMenuOpen(false)} />
+          <button
+            type="button"
+            className="flex-1 cursor-default"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-label="Close navigation menu"
+          />
         </div>
       )}
     </header>

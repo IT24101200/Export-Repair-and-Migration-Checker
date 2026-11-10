@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { WorkspaceSummary } from "@/lib/types/workspace";
 import { X, ShieldCheck, Check, Database, AlertCircle } from "lucide-react";
 
@@ -20,6 +20,22 @@ export default function SaveSummaryModal({
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -70,15 +86,22 @@ export default function SaveSummaryModal({
 
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-900 rounded-xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-slate-200 dark:border-slate-800 transition-colors">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="save-summary-title"
+        className="bg-white dark:bg-slate-900 rounded-xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-slate-200 dark:border-slate-800 transition-colors"
+      >
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-slate-100 text-sm">
             <Database className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-            <span>Save Scan Summary to Account</span>
+            <span id="save-summary-title">Save Scan Summary to Account</span>
           </div>
           <button
             type="button"
+            ref={closeButtonRef}
             onClick={onClose}
+            aria-label="Close save summary dialog"
             className="p-1 rounded-md text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
           >
             <X className="w-4 h-4" />

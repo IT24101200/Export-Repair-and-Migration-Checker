@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
-import { MagneticButton } from "@/components/ui/motion-footer";
+import { MagneticButton } from "@/components/ui/magnetic-button";
 
 interface Button12Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label: string;

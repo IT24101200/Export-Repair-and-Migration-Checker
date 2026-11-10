@@ -1,9 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { ShieldCheck, Lock } from "lucide-react";
-import { CinematicFooter } from "@/components/ui/motion-footer";
+
+const CinematicFooter = dynamic(
+  () => import("@/components/ui/motion-footer").then((module) => module.CinematicFooter),
+  {
+    ssr: false,
+    loading: () => <div className="h-[85vh] sm:h-screen w-full mt-12" aria-hidden="true" />,
+  }
+);
 
 // Main footer component that selects between cinematic motion footer on home page
 // and a compact, user-friendly footer on all other pages

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { IssueItem } from "@/lib/types/workspace";
 import {
@@ -106,6 +106,7 @@ function getHelpfulNextAction(issue: IssueItem) {
 export default function IssueDrawer({ issue, onClose, onApprove, onSkip }: IssueDrawerProps) {
   const [copied, setCopied] = useState(false);
   const [customTarget, setCustomTarget] = useState<string>("");
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   // Close on Escape key
   useEffect(() => {
@@ -113,9 +114,15 @@ export default function IssueDrawer({ issue, onClose, onApprove, onSkip }: Issue
       if (e.key === "Escape") onClose();
     };
     if (issue) {
+      const previouslyFocused = document.activeElement as HTMLElement | null;
       window.addEventListener("keydown", handleKeyDown);
+      closeButtonRef.current?.focus();
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+        previouslyFocused?.focus();
+      };
     }
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return undefined;
   }, [issue, onClose]);
 
   if (!issue) return null;
@@ -134,11 +141,16 @@ export default function IssueDrawer({ issue, onClose, onApprove, onSkip }: Issue
       <div className="flex-1" onClick={onClose} aria-hidden="true" />
 
       {/* Drawer Container */}
-      <div className="w-full sm:w-[480px] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col h-full max-h-screen sm:max-h-[100dvh] overflow-hidden animate-in slide-in-from-right duration-150 transition-colors">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="issue-drawer-title"
+        className="w-full sm:w-[480px] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col h-full max-h-screen sm:max-h-[100dvh] overflow-hidden animate-in slide-in-from-right duration-150 transition-colors"
+      >
         {/* Header */}
         <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/80 shrink-0">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">
+            <span id="issue-drawer-title" className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">
               Issue Inspection
             </span>
             <span
@@ -155,6 +167,7 @@ export default function IssueDrawer({ issue, onClose, onApprove, onSkip }: Issue
           </div>
           <button
             type="button"
+            ref={closeButtonRef}
             onClick={onClose}
             className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors"
             aria-label="Close drawer"

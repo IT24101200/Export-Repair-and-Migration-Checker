@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 import { Cta69 } from "@/components/ui/cta69";
-import { MagneticButton } from "@/components/ui/motion-footer";
+import { MagneticButton } from "@/components/ui/magnetic-button";
 
 export const metadata: Metadata = {
   title: "Export Repair & Migration Checker | Online Tool",

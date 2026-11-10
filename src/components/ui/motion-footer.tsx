@@ -1,12 +1,10 @@
 "use client";
 
-import * as React from "react";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
 import { ShieldCheck, Sparkles, ArrowRight, Heart } from "lucide-react";
+import { MagneticButton } from "@/components/ui/magnetic-button";
 
 // Register ScrollTrigger safely for React
 if (typeof window !== "undefined") {
@@ -17,10 +15,8 @@ if (typeof window !== "undefined") {
 // 1. THEME-ADAPTIVE INLINE STYLES
 // -------------------------------------------------------------------------
 export const STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap');
-
 .cinematic-footer-wrapper {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-sans), sans-serif;
   -webkit-font-smoothing: antialiased;
   
   /* Dynamic Variables using standard shadcn/tailwind v4 tokens */
@@ -132,105 +128,7 @@ export const STYLES = `
 `;
 
 // -------------------------------------------------------------------------
-// 2. MAGNETIC BUTTON PRIMITIVE (Zero Dependency)
-// -------------------------------------------------------------------------
-export type MagneticButtonProps = React.HTMLAttributes<HTMLElement> & {
-  as?: React.ElementType;
-  href?: string;
-  type?: "button" | "submit" | "reset";
-  disabled?: boolean;
-  target?: string;
-  rel?: string;
-  [key: string]: any;
-};
-
-export const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
-  ({ className, children, as: Component, href, ...props }, forwardedRef) => {
-    const localRef = useRef<HTMLElement>(null);
-
-    useEffect(() => {
-      if (typeof window === "undefined") return;
-      const element = localRef.current;
-      if (!element) return;
-
-      const ctx = gsap.context(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-          const rect = element.getBoundingClientRect();
-          const h = rect.width / 2;
-          const w = rect.height / 2;
-          const x = e.clientX - rect.left - h;
-          const y = e.clientY - rect.top - w;
-
-          gsap.to(element, {
-            x: x * 0.4,
-            y: y * 0.4,
-            rotationX: -y * 0.15,
-            rotationY: x * 0.15,
-            scale: 1.05,
-            ease: "power2.out",
-            duration: 0.4,
-          });
-        };
-
-        const handleMouseLeave = () => {
-          gsap.to(element, {
-            x: 0,
-            y: 0,
-            rotationX: 0,
-            rotationY: 0,
-            scale: 1,
-            ease: "elastic.out(1, 0.3)",
-            duration: 1.2,
-          });
-        };
-
-        element.addEventListener("mousemove", handleMouseMove as any);
-        element.addEventListener("mouseleave", handleMouseLeave);
-
-        return () => {
-          element.removeEventListener("mousemove", handleMouseMove as any);
-          element.removeEventListener("mouseleave", handleMouseLeave);
-        };
-      }, element);
-
-      return () => ctx.revert();
-    }, []);
-
-    const setRef = (node: HTMLElement) => {
-      (localRef as any).current = node;
-      if (typeof forwardedRef === "function") forwardedRef(node);
-      else if (forwardedRef) (forwardedRef as any).current = node;
-    };
-
-    if (href) {
-      return (
-        <Link
-          href={href}
-          ref={setRef as any}
-          className={cn("cursor-pointer", className)}
-          {...props}
-        >
-          {children}
-        </Link>
-      );
-    }
-
-    const Tag = Component || "button";
-    return (
-      <Tag
-        ref={setRef}
-        className={cn("cursor-pointer", className)}
-        {...props}
-      >
-        {children}
-      </Tag>
-    );
-  }
-);
-MagneticButton.displayName = "MagneticButton";
-
-// -------------------------------------------------------------------------
-// 3. MAIN COMPONENT
+// MAIN COMPONENT
 // -------------------------------------------------------------------------
 const MarqueeItem = () => (
   <div className="flex items-center space-x-12 px-6">
