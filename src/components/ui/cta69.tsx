@@ -109,9 +109,12 @@ export function Cta69({
             )}
           >
             {[0, 1].map((copy) => (
-              <span key={copy} className="inline-block px-3">
-                {marqueeLine}
-              </span>
+              <span
+                key={copy}
+                aria-hidden="true"
+                data-text={marqueeLine}
+                className="inline-block px-3 before:content-[attr(data-text)]"
+              />
             ))}
           </div>
         ))}

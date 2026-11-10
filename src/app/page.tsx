@@ -120,7 +120,7 @@ export default function HomePage() {
               <FileCheck2 className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">Notion Markdown &amp; CSV</h3>
+              <p className="font-semibold text-slate-900 dark:text-slate-100 text-sm">Notion Markdown &amp; CSV</p>
               <p className="text-xs text-slate-500 dark:text-slate-400">Supports standard ZIP exports</p>
             </div>
           </div>
@@ -129,7 +129,7 @@ export default function HomePage() {
               <Lock className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">Works without an account</h3>
+              <p className="font-semibold text-slate-900 dark:text-slate-100 text-sm">Works without an account</p>
               <p className="text-xs text-slate-500 dark:text-slate-400">Zero mandatory sign-up</p>
             </div>
           </div>
@@ -138,7 +138,7 @@ export default function HomePage() {
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">Original stays unchanged</h3>
+              <p className="font-semibold text-slate-900 dark:text-slate-100 text-sm">Original stays unchanged</p>
               <p className="text-xs text-slate-500 dark:text-slate-400">Creates a clean, verified copy</p>
             </div>
           </div>
