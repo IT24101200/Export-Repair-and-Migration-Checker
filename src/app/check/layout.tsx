@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Check and Repair a Notion Export | Online Tool",
+  title: "Check a Notion Markdown Export for Broken Links",
   description:
-    "Scan a Notion Markdown and CSV ZIP for broken relative links, missing image references, and path issues. Review suggested repairs locally in your browser.",
+    "Check a Notion Markdown and CSV ZIP for broken relative links, missing image references, and path issues. Review repair suggestions locally in your browser.",
   alternates: {
     canonical: "/check",
   },

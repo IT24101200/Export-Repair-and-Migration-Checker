@@ -114,6 +114,9 @@ export default function NotionExportBrokenLinksGuide() {
             <li>Links embedded inside CSV database tables are flagged as read-only.</li>
             <li>External web URLs (<code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-slate-800 dark:text-slate-200 font-mono">https://...</code>) are not modified.</li>
           </ul>
+          <p>
+            For the complete sequence from export to destination-app testing, follow the <Link href="/guides/repair-notion-markdown-export" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">Notion Markdown export repair workflow</Link>.
+          </p>
         </section>
       </div>
 

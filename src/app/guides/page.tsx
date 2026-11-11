@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { BookOpen, FileText, ArrowRight, ShieldCheck, CheckCircle2, Link2, Image as ImageIcon, FolderTree, CheckSquare } from "lucide-react";
+import { BookOpen, FileText, ArrowRight, ShieldCheck, CheckCircle2, Link2, Image as ImageIcon, FolderTree, CheckSquare, Wrench, CircleHelp } from "lucide-react";
 
 export const metadata = {
-  title: "Notion Export and Migration Guides | Export Repair",
-  description: "Read practical guides for exporting Notion workspaces, fixing broken Markdown links, diagnosing missing images, and preparing files for migration.",
+  title: "Notion Export Repair Guides: Links, Images & Migration",
+  description: "Learn how to repair Notion Markdown exports, fix broken links and image paths, troubleshoot ZIP problems, and prepare files for migration.",
   alternates: { canonical: "/guides" },
 };
 
@@ -15,6 +15,13 @@ export default function GuidesPage() {
       iconColor: "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/70 group-hover:bg-indigo-600 group-hover:text-white",
       title: "How to Export from Notion for Migration",
       desc: "Step-by-step instructions on exporting Notion workspaces to Markdown & CSV with subpages, handling attachments, and selecting the correct export settings.",
+    },
+    {
+      href: "/guides/repair-notion-markdown-export",
+      icon: Wrench,
+      iconColor: "text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/70 group-hover:bg-cyan-600 group-hover:text-white",
+      title: "Repair a Notion Markdown Export",
+      desc: "A safe start-to-finish workflow for scanning local references, reviewing repair suggestions, testing a new ZIP, and understanding what remains unchanged.",
     },
     {
       href: "/guides/understanding-results",
@@ -51,6 +58,13 @@ export default function GuidesPage() {
       title: "Pre-Migration Checklist: Check Before Moving",
       desc: "A practical 5-step checklist for preserving original archives, spot-checking repaired notes, and preparing files for Obsidian or Markdown apps.",
     },
+    {
+      href: "/guides/troubleshoot-notion-export-problems",
+      icon: CircleHelp,
+      iconColor: "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/70 group-hover:bg-rose-600 group-hover:text-white",
+      title: "Troubleshoot Common Notion Export Problems",
+      desc: "Diagnose missing pages, broken links, missing images, extraction failures, CSV limitations, and archives rejected by the checker.",
+    },
   ];
 
   return (
@@ -62,7 +76,7 @@ export default function GuidesPage() {
           <span>Documentation &amp; Guides</span>
         </div>
         <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
-          Export &amp; Migration Guides
+          Notion Export Repair &amp; Migration Guides
         </h1>
         <p className="text-slate-600 dark:text-slate-400 mt-2 max-w-2xl text-sm leading-relaxed">
           Learn how Notion exports files, why links break during migration, and how our tool inspects and fixes broken paths while keeping your data private.

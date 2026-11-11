@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Image as ImageIcon, AlertCircle, CheckCircle2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, Image as ImageIcon, CheckCircle2, ShieldCheck } from "lucide-react";
 
 export const metadata = {
-  title: "Missing Images in Notion Exports | Guide",
-  description: "Diagnose broken image references in Notion Markdown exports and learn the difference between an incorrect path and a file missing from the ZIP.",
+  title: "Fix Missing Images and Paths in Notion Exports",
+  description: "Fix broken image links in a Notion Markdown export by diagnosing wrong relative paths, case mismatches, missing files, and Obsidian import problems.",
   alternates: { canonical: "/guides/notion-export-missing-images" },
 };
 
@@ -24,7 +24,7 @@ export default function NotionExportMissingImagesGuide() {
           <span>Troubleshooting Guide</span>
         </div>
         <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
-          Missing Images in Notion Exports: Broken Path vs Missing File
+          How to Fix Broken Image Links in Notion Exports
         </h1>
         <p className="text-slate-600 dark:text-slate-400 mt-2 text-sm leading-relaxed">
           When opening exported notes in Markdown apps, you might see broken image placeholders. Learn how to tell if an image simply has an incorrect link path or was completely left out of your export.
@@ -38,7 +38,7 @@ export default function NotionExportMissingImagesGuide() {
           Key Distinction
         </strong>
         <p className="leading-relaxed">
-          If the image file is actually inside your ZIP but the note uses a mismatched subfolder name or URL encoding, our tool can fix the path automatically. If the image was excluded during export (e.g. export without files or cloud permissions), no local tool can recreate it without exporting again.
+          If the image file is inside your ZIP but the note uses a mismatched subfolder, filename case, or encoded path, the checker can propose a corrected relative path for your approval. If the image was excluded during export, no local tool can recreate it without exporting again.
         </p>
       </div>
 
@@ -81,6 +81,21 @@ export default function NotionExportMissingImagesGuide() {
 
         <section className="space-y-3">
           <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 border-b border-slate-200 dark:border-slate-800 pb-2">
+            Fixing Notion-to-Obsidian Broken Images
+          </h2>
+          <ol className="list-decimal pl-5 space-y-2 marker:text-slate-400 dark:marker:text-slate-500">
+            <li>Confirm the image exists inside the original Notion ZIP before moving any folders.</li>
+            <li>Compare the Markdown destination with the image&apos;s actual relative location and filename case.</li>
+            <li>Use the checker to review a unique matching image and approve the proposed path only when it is correct.</li>
+            <li>Extract the repaired copy into a fresh folder and open several image-heavy notes in Obsidian.</li>
+          </ol>
+          <p>
+            Export Repair keeps standard Markdown image syntax. It does not reorganize every attachment into an Obsidian attachments folder or convert embeds into wiki-link syntax.
+          </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 border-b border-slate-200 dark:border-slate-800 pb-2">
             How to Re-export Notion Notes with Full Images
           </h2>
           <ol className="list-decimal pl-5 space-y-2 marker:text-slate-400 dark:marker:text-slate-500">
@@ -89,6 +104,9 @@ export default function NotionExportMissingImagesGuide() {
             <li>Ensure &ldquo;Include content&rdquo; is set to <strong className="text-slate-900 dark:text-slate-100">Everything</strong> (not No files or images).</li>
             <li>Download the new ZIP and run it through our checker to verify all image links resolve locally.</li>
           </ol>
+          <p>
+            If links and images both fail, follow the complete <Link href="/guides/repair-notion-markdown-export" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">Notion Markdown export repair workflow</Link> before importing again.
+          </p>
         </section>
       </div>
 

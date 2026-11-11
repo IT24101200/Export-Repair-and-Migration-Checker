@@ -13,6 +13,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/guides", changeFrequency: "weekly", priority: 0.8 },
     { path: "/guides/notion-export", changeFrequency: "monthly", priority: 0.7 },
     {
+      path: "/guides/repair-notion-markdown-export",
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       path: "/guides/check-notion-export-before-moving",
       changeFrequency: "monthly",
       priority: 0.7,
@@ -34,6 +39,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       path: "/guides/understanding-results",
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      path: "/guides/troubleshoot-notion-export-problems",
       changeFrequency: "monthly",
       priority: 0.7,
     },

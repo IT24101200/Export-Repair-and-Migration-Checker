@@ -1268,8 +1268,16 @@ export default function CheckPage() {
   return (
     <Suspense
       fallback={
-        <div className="container-workspace py-16 text-center text-xs text-slate-500">
-          Loading workspace...
+        <div className="container-workspace py-16 text-center space-y-2">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100">
+            Check your Notion export
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+            Check a Notion Markdown and CSV ZIP for broken links, missing image references, and path issues.
+          </p>
+          <p className="text-xs text-slate-500 dark:text-slate-400" aria-live="polite">
+            Loading workspace...
+          </p>
         </div>
       }
     >

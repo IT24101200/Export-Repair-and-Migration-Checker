@@ -86,6 +86,9 @@ export default function CheckNotionExportBeforeMovingGuide() {
         <p className="leading-relaxed">
           Every repaired ZIP produced by our checker includes a dedicated <code className="bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded text-slate-800 dark:text-slate-200 font-mono">.export-repair-report/</code> folder with <code className="bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded text-slate-800 dark:text-slate-200 font-mono">report.html</code>. Open that file in any browser to see complete before-and-after audit logs and any unresolved links that require manual editing.
         </p>
+        <p className="leading-relaxed">
+          If you need the full process, use the <Link href="/guides/repair-notion-markdown-export" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">Notion Markdown repair guide</Link>. For image-heavy Obsidian imports, also review the <Link href="/guides/notion-export-missing-images" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">broken image troubleshooting steps</Link>.
+        </p>
       </div>
 
       {/* CTA Box */}

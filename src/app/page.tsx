@@ -19,7 +19,7 @@ import { Cta69 } from "@/components/ui/cta69";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 
 export const metadata: Metadata = {
-  title: "Export Repair & Migration Checker | Online Tool",
+  title: "Notion Export Checker & Markdown Repair Tool",
   description:
     "Check a Notion Markdown and CSV export for broken links, missing image references, and path issues. Review repairs and download a cleaner ZIP in your browser.",
   alternates: {
@@ -203,11 +203,11 @@ export default function HomePage() {
             <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
               <li className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-teal-600 dark:text-teal-400 mt-0.5 shrink-0" />
-                <span><strong>Markdown links:</strong> Identifies broken relative paths between exported notes.</span>
+                <span><Link href="/guides/notion-export-broken-links" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">Markdown links:</Link> Identifies broken relative paths between exported notes.</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-teal-600 dark:text-teal-400 mt-0.5 shrink-0" />
-                <span><strong>Local image references:</strong> Verifies embedded diagrams and attachments exist.</span>
+                <span><Link href="/guides/notion-export-missing-images" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">Local image references:</Link> Verifies embedded diagrams and attachments exist.</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-teal-600 dark:text-teal-400 mt-0.5 shrink-0" />
