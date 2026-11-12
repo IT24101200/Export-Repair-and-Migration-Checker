@@ -12,7 +12,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://export-repair-and-migration-checker.onrender.com"),
+  metadataBase: new URL("https://export-repair-and-migration-checker.vercel.app"),
   title: "Export Repair and Migration Checker — Fix Broken Notion Export Links",
   description: "Check your Notion Markdown/CSV export, review broken references, approve supported repairs, and download a clean copy entirely on your device.",
 };

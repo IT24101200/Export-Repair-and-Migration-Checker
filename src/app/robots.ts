@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const baseUrl = "https://export-repair-and-migration-checker.onrender.com";
+const baseUrl = "https://export-repair-and-migration-checker.vercel.app";
 
 export default function robots(): MetadataRoute.Robots {
   const publicAccessRule = {
